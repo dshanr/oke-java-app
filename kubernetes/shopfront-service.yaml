@@ -6,12 +6,12 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: shofront
+  name: shopfront
   namespace: ${namespace}
 spec:
   selector:
     matchLabels:
-      app: shofront
+      app: shopfront
   replicas: 1
   template:
     metadata:
