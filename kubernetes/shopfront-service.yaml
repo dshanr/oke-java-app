@@ -1,28 +1,17 @@
----
+kind: Namespace
 apiVersion: v1
-kind: Service
 metadata:
-  name: shopfront
-  labels:
-    app: shopfront
-spec:
-  type: NodePort
-  selector:
-    app: shopfront
-  ports:
-  - protocol: TCP
-    port: 8010
-    name: http
-
+  name: ${namespace}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: shopfront
+  name: shofront
+  namespace: ${namespace}
 spec:
   selector:
     matchLabels:
-      app: shopfront
+      app: shofront
   replicas: 1
   template:
     metadata:
@@ -31,12 +20,31 @@ spec:
     spec:
       containers:
       - name: shopfront
-        image: thetips4you/shopfront:latest
+        image: iad.ocir.io/orasenatdpltintegration03/shopfront:${BUILDRUN_HASH}
         ports:
-        - containerPort: 8010
+        - containerPort: 8080
+          protocol: TCP
         livenessProbe:
-          httpGet:
-            path: /health
-            port: 8010
-          initialDelaySeconds: 30
-          timeoutSeconds: 1
+          exec:
+            command:
+            - cat
+            - echo "BUILD RUN"
+            - echo ${BUILDRUN_HASH}
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shopfront-app-service
+  namespace: ${namespace}
+  annotations: 
+    service.beta.kubernetes.io/oci-load-balancer-shape: "10Mbps"
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: shopfront-app
