@@ -58,14 +58,14 @@ steps:
       cd ${OCI_PRIMARY_SOURCE_DIR}/shopfront
       echo "SOURCE DIR"
       echo ${OCI_PRIMARY_SOURCE_DIR}/shopfront
-      docker build -t java-oke/shopfront .      
+      docker build -t shopfront_base .      
      
 outputArtifacts:
   - name: shopfront_image
     type: DOCKER_IMAGE
     # this location tag doesn't effect the tag used to deliver the container image
     # to the Container Registry
-    location: java-oke/shopfront:latest
+    location: shopfront_base:latest
 
   - name: shopfront_manifest
     type: BINARY
